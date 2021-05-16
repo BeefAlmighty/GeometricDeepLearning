@@ -1,0 +1,104 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, geometry, amsfonts, hyperref}
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\norm}{\mathcal{N}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\title{Bayesian Linear Regression Notes}
+\author{Nicholas Hoell}
+
+
+\begin{document}
+\maketitle
+\section{Linear Regression}
+\subsection{The Basic Formulation}
+Consider the simple multivariate linear regression problem where in data of the form ${(\x_i, y_i)}_{i=1}^m$ are drawn from an unknown data-generating distribution $\mathcal{D}$ and we wish to find a tidy linear estimator for the $y_i$'s as responses to the input $\x_i$'s.  In keeping with standard convention assume that $\x_i = (1, \tilde{\x}_i) \in \mathbb{R}^d$ holds for all $i$. 
+
+We then assume that the observables ${(\x_i, y_i)}_{i=1}^m$ satisfy
+\begin{equation} 
+\label{lr}
+y_i = \x_i \cdot \theta + \epsilon_i
+\end{equation}
+
+Inspired by the classical central limit theorem (saying, very roughly, that independent errors accumulate as Gaussians) we propose that the residuals terms are distributed according to a  normal distribution, 
+\[\epsilon_i \sim \norm(0, \sigma^2)\]
+each with known variance $\sigma^2$. Assume further that the errors are drawn independent of each other and of the data.
+\subsection{The Random Variable Viewpoint}
+
+The above outline is the standard framework for multivariate linear regression.
+
+
+ Consider now that the above scenario is simply the multiple {\it realizations} of an equation involving random variables $(X, Y) \sim \mathcal{D}$, i.e. 
+ 
+\begin{equation}
+\label{prob}Y = X \cdot \theta + \epsilon
+\end{equation}
+
+It is as though this random variable equation is being sampled $m$ times to produce the simultaneous equations \eqref{lr}.  Supposing that the latent variables $\theta$ were fixed, \eqref{lr} tells us that 
+\begin{align*}
+p(y \mid \x, \theta) &= p( \x \cdot \theta + \epsilon \mid \theta)\\
+  &\propto p(\epsilon)\\
+  &=\norm(0, \sigma^2)(\epsilon)\\
+  &=\norm(0, \sigma^2)(y-\x \cdot \theta)\\
+  &\propto e^{-\frac{|y - \x \cdot \theta|^2}{2\sigma^2}}
+\end{align*}
+where, in the above, $p(z) = \P(Z=z)$ etc. Recall that given a probability density function $f(x\mid \theta)$ parameterized by parameters $\theta$ the {\bf likelihood} function is defined as $L(\theta) \doteq f(x \mid \theta)$. Namely, a likelihood function of a data set is the probability of obtaining that data set under a given choice of parameters. For our regression problem, therefore, we have 
+
+\begin{align*}
+L(\theta) &= p((y_1, \x_1), (y_2, \x_2), ...., (y_n, \x_n) \mid  \theta)\\
+&=\prod_{i=1}^m p((y_i, \x_i) \mid \theta)\\
+&\propto \prod_{i=1}^m e^{-\frac{|y_i - \x_i \cdot \theta|^2}{2\sigma^2}}\\
+&=  e^{-\frac{||\mathbf{y} - \mathbf{X} \cdot \theta||^2}{2\sigma^2}}
+\end{align*}
+In the above, $\mathbf{y} = (y_1, ..., y_m)$ and $\mathbf{X} = \begin{bmatrix} \x_1^ T \\ \vdots \\ \x_m^T \end{bmatrix}$. 
+
+The maximum likelihood principle suggests selecting parameters which make the data most likely to obtain.  So in the case we select
+\begin{align*} \theta^* &= \argmax_\theta L(\theta) \\
+& = \argmax_\theta \log L(\theta)\\
+& =  \argmax_\theta -\frac{||\mathbf{y} - \mathbf{X} \cdot \theta||^2}{2\sigma^2} \\
+& =  \argmin_\theta \frac{||\mathbf{y} -  \mathbf{X} \cdot \theta||^2}{2\sigma^2}
+\end{align*}
+Solving $ \argmin_\theta \frac{||\mathbf{y} -  \mathbf{X} \cdot \theta||^2}{2\sigma^2}$ will yield the standard, familar, linear regression equations. 
+\subsection{Including Priors}
+Suppose that we spice up the previous scenario by not assuming that the latent parameters $\theta$ are static, but rather that they are drawn themselves from a distribution. For simplicity, assume that $\theta_i \sim \norm(0, \tau^ 2)$ with samples being iid and independent of $\epsilon$ and of the data. We then have the fully randomized model 
+\[ Y = X \cdot \Theta + \epsilon \]
+Performing a similar calculation as before, we have 
+\begin{align*}
+p(y \mid \x, \theta, \epsilon) &= p( \x \cdot \theta + \epsilon \mid \theta, \epsilon)\\
+& = p( \x \cdot \theta + \epsilon \mid \theta) p( \x \cdot \theta + \epsilon \mid \epsilon)\\
+  &\propto p(\epsilon)p (\x \cdot \theta)\\
+  &\propto p(\epsilon)p (\theta) \\
+  &=\norm(0, \sigma^2)(\epsilon)\norm(0, \tau^2)(\theta)\\
+  &=\norm(0, \sigma^2)(y-\x \cdot \theta)\norm(0, \tau^2)(\theta)\\
+  &\propto e^{-\frac{|y - \x \cdot \theta|^2}{2\sigma^2}}e^{-\frac{\theta^2}{2\tau^2}}
+\end{align*}
+Putting these together, we have 
+
+\begin{align*}
+L(\theta) &= p((y_1, \x_1), (y_2, \x_2), ...., (y_n, \x_n) \mid  \theta)\\
+&=\prod_{i=1}^m p((y_i, \x_i) \mid \theta)\\
+&\propto \prod_{i=1}^m e^{-\frac{|y_i - \x_i \cdot \theta|^2}{2\sigma^2}}e^{-\frac{\theta^2}{2\tau^2}}\\
+&=  e^{-\frac{||\mathbf{y} - \mathbf{X} \cdot \theta||^2}{2\sigma^2} -\frac{\theta^2}{2\tau^2} }
+\end{align*}
+from which we see that the maximum likelihood estimator solution solves 
+\begin{equation}
+\label{ridge}
+\theta^* = \argmin_\theta ||\mathbf{y} + \mathbf{X} \cdot \theta||^2 + \frac{\sigma}{\tau}||\theta||^2
+\end{equation}
+which the literature refers to as the so-called {\it ridge regression} solution. 
+A few comments about \eqref{ridge} are in order. 
+\begin{enumerate}
+\item The hyperparameter $\lambda = \frac{\sigma}{\tau}$ controls the size of the so-called penalty term in the optimization. It controls how much ``fidelity" we are willing to trade for taming the parameters. 
+\item The larger $\sigma$ is, the larger $\lambda$ is and thus, the more uncertainty we have in our model, the more we should enforce tightening of the coefficients and vice versa. 
+\item The larger $\tau$ is the larger $\lambda$ is and thus, the more uncertainty we have on what to expect of our coefficients, the more we should enforce tightening of them and vice versa.  
+\item Prior assumptions on the latent variables {\it and thus prior assumptions on the data generating distribution} cause the optimization problem to take on different form, resulting in a different final regressor function. 
+\end{enumerate}
+
+
+
+
+
+\end{document}

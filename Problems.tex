@@ -1,0 +1,29 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, geometry, amsfonts, hyperref}
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\norm}{\mathcal{N}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\title{Suggested Problems}
+\author{Nicholas Hoell}
+
+
+\begin{document}
+\maketitle
+The below are some suggested problems to help retain the concepts in our deep learning text. 
+
+\begin{itemize}
+\item On page 25 we see the following identity
+\[ \frac{|| f(\rho(\tau) x) -f(x)||  }{||x||} = \mathcal{O}(1)\]
+Prove this.  In the above, $\tau(u) = u - \tilde{\tau}(u)$ for $sup_{u \in \Omega}||\grad \tilde{\tau} (u)|| \leq \epsilon$ and $f = f_\xi : x \mapsto |\hat{x}(\xi)|$. 
+\item On page 33, the book discusses permutation matrices $P = P_\sigma$ which are representations of the permutation group $\Sigma_n$ on feature space of nodes in a graph.  They indicate that applying $P_\sigma$ to the feature matrix applies {\it conjugating} the adjacency matrix, viz. $A \mapsto P_\sigma AP_\sigma ^T$.  Prove this. 
+\item On page 37, the authors mention that circular matrices commute.  This follows from the fact that convolutions in general form a commutative algebra.  Prove this fact.  Namely, prove that convolution operations are commutative. 
+
+\item Suppose that $A$ is an invertible $n\times n$ matrix and let $\mathcal{F}$ denote the Fourier transform operator.  Prove that $\mathcal{F}(\rho_{A^{-1}} f) = \frac{\rho_{A^T}\mathcal{F}(f)}{|\det A|}$. 
+
+\end{itemize}
+
+\end{document}
